@@ -20,8 +20,13 @@ Challenge 1
 
 Challenge 2
 
-    I created a simulation of a pipeline in Azure DevOps. From a writing perspective it was easier for me, and Azure DevOps uses the same YAML-based syntax as GitLab, so the overall patterns are pretty much the same.
+    I created a simulation of a pipeline in Azure DevOps. 
+    
+    From a writing perspective it was easier for me, and Azure DevOps uses the same YAML-based syntax as GitLab, so the overall patterns are pretty much the same.
 
-    In the ci_cd_pipeline.png image I included an explanation for each stage, along with notes on how to handle and manage the secrets and keys required to run the pipeline.
+    In the ci_cd_pipeline.png image I included an explanation for each stage, 
+    along with notes on how to handle and manage the secrets and keys required to run the pipeline.
 
-    The pipeline can also be enhanced by adding a CD stage triggered by ArgoCD. When the CI pipeline updates the Helm values file with the new image built during the CI process, ArgoCD is then triggered and deploys that newly created image.
+    The pipeline can also be enhanced by adding a CD stage triggered by ArgoCD.
+     
+    When the CI pipeline updates the Helm values file with the new image built during the CI process, ArgoCD is then triggered and deploys that newly created image.
