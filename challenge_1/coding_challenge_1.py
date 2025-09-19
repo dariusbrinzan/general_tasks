@@ -17,7 +17,7 @@ def main():
         ({"a": {"b": {"c": "d"}}}, "a/b/c", "d"),
         ({"x": {"y": {"z": "a"}}}, "x/y/z", "a"),
         # 3. check integer number
-        ({"num": {"prime": {"second": 3}}}, "num/prime/second", 3),
+        ({"number": {"first": {"second": 3}}}, "number/first/second", 3),
         # 4. list
         ({"letters": {"vowels": ["a", "e", "i"]}}, "letters/vowels", ["a", "e", "i"]),
         # 5. boolean check
@@ -27,7 +27,7 @@ def main():
         # 7. single key check
         ({"root": "value"}, "root", "value"),
         # 8. deep nesting
-        ({"lvl1": {"lvl2": {"lvl3": {"lvl4": "deep"}}}}, "lvl1/lvl2/lvl3/lvl4", "deep"),
+        ({"lvl1": {"lvl2": {"lvl3": {"lvl4": "deep_lvl"}}}}, "lvl1/lvl2/lvl3/lvl4", "deep_lvl"),
     ]
 
     print("===== Running tests step by step: =====\n")
