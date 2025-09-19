@@ -1,0 +1,82 @@
+# trigger:
+#   branches:
+#     include:
+#       - main
+#       - release/* # optional to have trigger on main / release branches when PR is merged
+
+pool:
+  name: 'poc-pool-ci-cd-agents' # ephemeral agents pool that spawn on demand (KEDA) | when job is triggered
+
+variables:
+- group: SonarQube-Variables # sonarqube groups the will be needed for connection to sonarqube server
+- group: NexusIQ-Variables # nexusIQ groups the will be needed for connection to nexusIQ server
+- group: AzureKeyVault-Variables # azure key vault group that will be needed for fetching secrets
+
+resources:
+  repositories:
+    - repository: poc_java_repository # where main java code resides
+      type: github
+      name: my-org/repository/java-maven-app
+      endpoint: gh-service-connection # service connection to github repo
+
+stages:
+- stage: Init # initialize secrets from AKV and other setup tasks (Sonar and NexusIQ variables are already in variable groups)
+  jobs:
+  - job: InitSecrets
+    steps:
+      - script: echo "Fetch secrets from Azure Key Vault and initialize environment"
+
+- stage: Build
+  dependsOn: Init
+  jobs:
+  - job: BuildApp # build the application after fetching the main repository code and secrets from AKV
+    steps:
+      - script: echo "mvn clean install -dSkipTests" # build the java application
+
+- stage: QualityGateSonar
+  dependsOn: Build
+  jobs:
+  - job: SonarScan # scan code with SonarQube
+    steps:
+      - script: echo "SonarQube scanning"
+
+- stage: QualityGateNexusIQ
+  dependsOn: Build
+  jobs:
+  - job: NexusIQScan # scan the code with NexusIQ
+    steps:
+      - script: echo "NexusIQ scanning"
+
+- stage: DockerBuild
+  dependsOn: 
+    - QualityGateSonar
+    - QualityGateNexusIQ
+  jobs:
+  - job: BuildDocker # build docker image if both quality gates are passed
+    steps:
+      - script: echo "Build docker image with the new application version""
+
+- stage: AquaScan
+  dependsOn: DockerBuild
+  jobs:
+  - job: ScanImage # scan docker image with AquaSec after the image is built
+    steps:
+      - script: echo "AquaSec new image scanning"
+
+- stage: PushRegistry
+  dependsOn: AquaScan
+  jobs:
+  - job: PushImage # push docker image to private container registry if aqua scan is passed
+    steps:
+      - script: echo "Push the new image to private container registry"
+
+- stage: Deploy
+  dependsOn: PushRegistry
+  jobs: # deploy to k8s cluster if image is pushed successfully
+  - deployment: DeployK8s
+    environment: development
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: echo "Helm deploy the application to K8s getting the image from container registry"
