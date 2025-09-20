@@ -77,7 +77,7 @@ stages:
   dependsOn: PushRegistry
   jobs: # deploy to k8s cluster if image is pushed successfully
   - deployment: DeployK8s
-    environment: development
+    environment: development # can be any other environment like qa, uat, production
     strategy:
       runOnce:
         deploy:
