@@ -2,6 +2,9 @@ trigger:
   branches:
     include:
       - main
+      - qa
+      - development
+      - uat
       - release/* # optional to have trigger on main / release branches when PR is merged
 
 pool:
